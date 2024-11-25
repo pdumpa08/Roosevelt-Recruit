@@ -5,10 +5,10 @@ const NavLinks = () => {
     return (
         <>
             <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/#about">
-                Student Dashboard
+                About
             </HashLink>
             <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/#services">
-                Job Openings
+                Jobs
             </HashLink>
             <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" to="/">
                 Posting Portal
