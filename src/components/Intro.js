@@ -1,35 +1,47 @@
 import React from 'react';
-import img from '../images/Web-developer.svg';
+import img from '../images/erhsLogo.png';
 import { Link } from 'react-router-dom';
 
 const Intro = () => {
     return (
         <>
-                <div className="m-auto max-w-6xl p-2 md:p-12 h-5/6" id='about' >
-
-                    <div className="flex flex-col-reverse lg:flex-row py-8 justify-between lg:text-left" data-aos="fade-up">
-                        <div className="lg:w-1/2 flex flex-col lg:mx-4 justify-center">
-                            <img alt="card img" className="rounded-t float-right" src={img} />
+            <div className="m-auto max-w-6xl p-2 md:p-12 h-5/6" id="about">
+                <div className="flex flex-col py-8 justify-between items-center" data-aos="fade-up">
+                <div className="justify-center">
+                    <img alt="card img" className="rounded-t" src={img} style={{ width: '300px', height: 'auto' }} />
+                </div>
+                    <br></br><br></br>
+                    <div
+                        className="my-4 text-center lg:text-center lg:my-0 w-full px-8"
+                        data-aos="zoom-in"
+                        data-aos-delay="500"
+                    >
+                        <h3 className="text-3xl text-orange-700 font-bold">Our Mission</h3>
+                        <div>
+                            <p className="my-3 text-xl text-gray-600 font-semibold">
+                                Eleanor Roosevelt strives to provide internship & career
+                                opportunities for all students.
+                            </p>
                         </div>
-                        <div className="flex-col my-4 text-center lg:text-left lg:my-0 lg:justify-end w-full lg:w-1/2 px-8" data-aos="zoom-in" data-aos-delay="500">
-                            
-                            <h3 className="text-3xl  text-blue-900 font-bold">Eleanor Roosevelt strives to provide internship & career opportunities for all students</h3>
-                            <div>
-                                <p className='my-3 text-xl text-gray-600 font-semibold'>Our team is well vast in software development and is ready to help develop the applications of your choice.</p>
-                            </div>
-                            
-                            <div>
-                                <p className='my-3 text-xl text-gray-600 font-semibold'>We take responsibility for building custom software solutions that caters for automation of your business processes and improve efficiency.</p>
-                            </div>
-                            <Link to="/contact" className="text-white bg-orange-700 hover:bg-orange-800 inline-flex items-center justify-center w-full px-6 py-2 my-4 text-lg shadow-xl rounded-2xl sm:w-auto sm:mb-0 group">
+                        <br></br>
+                        <br></br>
+                        <div className="flex flex-row justify-center items-center space-x-4">
+                            <Link
+                                to="/contact"
+                                className="text-white bg-blue-900 hover:bg-blue-500 inline-flex items-center justify-center px-6 py-2 text-lg shadow-xl rounded-2xl"
+                            >
                                 Student Portal
                             </Link>
-                            <Link to="/contact" className="text-white bg-orange-700 hover:bg-orange-800 inline-flex items-center justify-center w-full ml-24 px-6 py-2 my-4 text-lg shadow-xl rounded-2xl sm:w-auto sm:mb-0 group">
+                            <Link
+                                to="/contact"
+                                className="text-black bg-blue-300 hover:bg-blue-500 inline-flex items-center justify-center px-6 py-2 text-lg shadow-xl rounded-2xl"
+                            >
                                 Employer Portal
                             </Link>
                         </div>
                     </div>
                 </div>
+            </div>
         </>
     )
 }
