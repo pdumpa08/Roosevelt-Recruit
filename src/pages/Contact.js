@@ -27,54 +27,50 @@ const Contact = () => {
         setMessage('')
     }
 
-    const sendEmail = (e) => {
+        const sendEmail = (e) => {
         e.preventDefault();
         document.getElementById('submitBtn').disabled = true;
         document.getElementById('submitBtn').innerHTML = 'Loading...';
+    
+        // Replace with your Google Form action URL
+        const googleFormActionURL = 'https://docs.google.com/forms/d/e/1FAIpQLSd_OakANSTfu6pFIrv3HuuDRswlfYwADXMPQcimGy6o-b2RjQ/formResponse';
+    
+        // Create a new FormData object
         let fData = new FormData();
-        fData.append('first_name', firstName)
-        fData.append('last_name', lastName)
-        fData.append('email', email)
-        fData.append('phone_number', phone)
-        fData.append('message', message)
-
-        axios({
-            method: "post",
-            url: process.env.REACT_APP_CONTACT_API,
-            data: fData,
-            headers: {
-                'Content-Type':  'multipart/form-data'
-            }
+        fData.append('entry.1130927803', firstName);
+        fData.append('entry.1660358777', lastName);
+        fData.append('entry.690694133', email);
+        fData.append('entry.323091977', phone);
+        fData.append('entry.2116000779', message);
+    
+        // Send the form data to the Google Form
+        fetch(googleFormActionURL, {
+            method: 'POST',
+            body: fData,
+            mode: 'no-cors'
         })
-        .then(function (response) {
+        .then(() => {
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('submitBtn').innerHTML = 'send message';
-            clearInput()
-            //handle success
+            clearInput();
+            // Handle success
             Notiflix.Report.success(
                 'Success',
-                response.data.message,
+                'Your message has been sent successfully.',
                 'Okay',
             );
         })
-        .catch(function (error) {
+        .catch((error) => {
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('submitBtn').innerHTML = 'send message';
-            //handle error
-            const { response } = error;
-            if(response.status === 500) {
-                Notiflix.Report.failure(
-                    'An error occurred',
-                    response.data.message,
-                    'Okay',
-                );
-            }
-            if(response.data.errors !== null) {
-                setErrors(response.data.errors)
-            }
-            
+            // Handle error
+            Notiflix.Report.failure(
+                'An error occurred',
+                'There was an error sending your message. Please try again later.',
+                'Okay',
+            );
         });
-    }
+    };
     return (
         <>
             <div>
