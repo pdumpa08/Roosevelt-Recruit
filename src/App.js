@@ -9,8 +9,8 @@ import {
 } from 'react-router-dom';
 // All pages
 import Home from './pages/Home';
-import Contact from './pages/Contact';
-import DemoProduct from './pages/DemoProduct';
+import EmployerPortal from './pages/EmployerPortal';
+import StudentPortal from './pages/StudentPortal';
 
 import {useDocTitle} from './components/CustomHook';
 import ScrollToTop from './components/ScrollToTop';
@@ -38,8 +38,8 @@ function App() {
         <ScrollToTop>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/get-demo" element={<DemoProduct />} /> 
+            <Route path="/student-portal" element={<StudentPortal />} /> 
+            <Route path="/employer-portal" element={<EmployerPortal />} /> 
           </Routes>
         </ScrollToTop>
       </Router>

@@ -8,16 +8,16 @@ const NavLinks = () => {
                 About
             </HashLink>
             <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/#services">
-                Jobs
+                Services
             </HashLink>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" to="/">
-                Posting Portal
-            </HashLink>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" to="/contact#contact">
+            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/#contact">
                 Contact Us
             </HashLink>
-            <HashLink className="text-white bg-orange-700 hover:bg-orange-800 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-xl" smooth to="/get-demo#demo">
-                Login
+            <HashLink className="text-white bg-orange-900 hover:bg-orange-700 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-xl" smooth to="/student-portal">
+                Student Portal
+            </HashLink>
+            <HashLink className="text-white bg-blue-900 hover:bg-blue-700 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-xl" smooth to="/employer-portal">
+                Employer Portal
             </HashLink>
         </>
     )
