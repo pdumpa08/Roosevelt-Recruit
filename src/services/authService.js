@@ -1,13 +1,21 @@
 import { auth, db } from '../firebaseconfig';
 import { signInWithPopup, GoogleAuthProvider, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+            return { ...user, userType: userDoc.data().userType };
+        } else {
+            throw new Error('User document does not exist');
+        }
     } catch (error) {
         console.error("Error logging in: ", error);
+        throw error;
     }
 };
 
@@ -40,9 +48,17 @@ const handleEmailSignup = async (email, password, userType) => {
 
 const handleEmailLogin = async (email, password) => {
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        const user = result.user;
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+            return { ...user, userType: userDoc.data().userType };
+        } else {
+            throw new Error('User document does not exist');
+        }
     } catch (error) {
         console.error("Error logging in: ", error);
+        throw error;
     }
 };
 

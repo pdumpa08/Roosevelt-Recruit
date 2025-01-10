@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db, storage } from '../firebaseconfig';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 import { useDocTitle } from '../components/CustomHook';
@@ -6,44 +9,73 @@ import { useDocTitle } from '../components/CustomHook';
 const StudentPortal = () => {
     useDocTitle('Student Portal');
 
-    const [jobPostings] = useState([
-        {
-            id: 1,
-            title: 'Software Engineer',
-            location: 'New York, NY',
-            applications: 5,
-            companyName: 'Tech Co.',
-            email: 'contact@techco.com',
-            website: 'https://techco.com',
-            description: 'Developing innovative software solutions.',
-            status: 'Pending',
-        },
-        {
-            id: 2,
-            title: 'Product Manager',
-            location: 'San Francisco, CA',
-            applications: 8,
-            companyName: 'Product Inc.',
-            email: 'hr@productinc.com',
-            website: 'https://productinc.com',
-            description: 'Lead product development and strategy.',
-            status: 'Pending',
-        },
-    ]);
+    const [jobPostings, setJobPostings] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedJob, setSelectedJob] = useState(null);
+    const [applicantName, setApplicantName] = useState('');
+    const [applicantEmail, setApplicantEmail] = useState('');
+    const [coverLetterFile, setCoverLetterFile] = useState(null);
+    const [answers, setAnswers] = useState([]);
 
-    const updateJobStatus = (id, status) => {
+    useEffect(() => {
+        const fetchJobPostings = async () => {
+            const querySnapshot = await getDocs(collection(db, 'jobPostings'));
+            const jobs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setJobPostings(jobs);
+        };
 
-        // Update the job status here
+        fetchJobPostings();
+    }, []);
 
+    const handleApply = (job) => {
+        setSelectedJob(job);
+        setAnswers(new Array(job.questions.length).fill(''));
+        setIsModalOpen(true);
+    };
+
+    const handleFileChange = (e) => {
+        if (e.target.files[0]) {
+            setCoverLetterFile(e.target.files[0]);
+        }
+    };
+
+    const handleAnswerChange = (index, value) => {
+        const newAnswers = [...answers];
+        newAnswers[index] = value;
+        setAnswers(newAnswers);
+    };
+
+    const handleSubmitApplication = async (e) => {
+        e.preventDefault();
+        try {
+            let coverLetterURL = '';
+            if (coverLetterFile) {
+                const storageRef = ref(storage, `coverLetters/${coverLetterFile.name}`);
+                await uploadBytes(storageRef, coverLetterFile);
+                coverLetterURL = await getDownloadURL(storageRef);
+            }
+
+            await addDoc(collection(db, 'applications'), {
+                jobId: selectedJob.id,
+                applicantName: applicantName,
+                applicantEmail: applicantEmail,
+                coverLetterURL: coverLetterURL,
+                answers: answers,
+                status: 'Pending',
+            });
+            alert('Application submitted successfully!');
+            setIsModalOpen(false);
+            setApplicantName('');
+            setApplicantEmail('');
+            setCoverLetterFile(null);
+            setAnswers([]);
+        } catch (error) {
+            console.error('Error submitting application: ', error);
+        }
     };
 
     return (
         <>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
             <NavBar />
             <div className="container mx-auto p-6" data-aos="fade-up">
                 <h1 className="text-4xl font-bold text-gray-800 mb-4">Welcome to the Student Portal</h1>
@@ -76,16 +108,10 @@ const StudentPortal = () => {
 
                                 <div className="mt-4 flex gap-4">
                                     <button
-                                        className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
-                                        onClick={() => updateJobStatus(job.id, 'Accepted')}
+                                        className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                                        onClick={() => handleApply(job)}
                                     >
-                                        Accept
-                                    </button>
-                                    <button
-                                        className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
-                                        onClick={() => updateJobStatus(job.id, 'Denied')}
-                                    >
-                                        Deny
+                                        Apply
                                     </button>
                                 </div>
                             </li>
@@ -93,8 +119,73 @@ const StudentPortal = () => {
                     </ul>
                 </section>
             </div>
-            <br></br>
-            <br></br>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">Apply for {selectedJob?.title}</h3>
+                        <form onSubmit={handleSubmitApplication}>
+                            <div className="mb-4">
+                                <label className="block text-gray-700">Name</label>
+                                <input
+                                    type="text"
+                                    value={applicantName}
+                                    onChange={(e) => setApplicantName(e.target.value)}
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700">Email</label>
+                                <input
+                                    type="email"
+                                    value={applicantEmail}
+                                    onChange={(e) => setApplicantEmail(e.target.value)}
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700">Cover Letter (PDF)</label>
+                                <input
+                                    type="file"
+                                    accept=".pdf"
+                                    onChange={handleFileChange}
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    required
+                                />
+                            </div>
+                            {selectedJob?.questions.map((question, index) => (
+                                <div key={index} className="mb-4">
+                                    <label className="block text-gray-700">{question}</label>
+                                    <textarea
+                                        value={answers[index]}
+                                        onChange={(e) => handleAnswerChange(index, e.target.value)}
+                                        className="w-full p-2 border border-gray-300 rounded-lg"
+                                        required
+                                    />
+                                </div>
+                            ))}
+                            <div className="flex justify-end gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-400"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                                >
+                                    Submit Application
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             <Footer />
         </>
     );

@@ -11,6 +11,30 @@ const AuthModal = ({ isOpen, onClose }) => {
     const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
     const [userType, setUserType] = useState('');
 
+    const handleSetUserTypeAndEmailLogin = async () => {
+        try {
+            const user = await handleEmailLogin(email, password);
+            if (user) {
+                setUserType(user.userType);
+                onClose();
+            }
+        } catch (error) {
+            console.error('Login failed', error);
+        }
+    };
+
+    const handleSetUserTypeAndGoogleLogin = async () => {
+        try {
+            const user = await handleGoogleLogin();
+            if (user) {
+                setUserType(user.userType);
+                onClose();
+            }
+        } catch (error) {
+            console.error('Login failed', error);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -27,7 +51,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                     
                     <div className="mb-6">
                         <div className="flex justify-center items-center mb-4">
-                            <div className="flex items-center cursor-pointer mx-2" onClick={handleGoogleLogin}>
+                            <div className="flex items-center cursor-pointer mx-2" onClick={handleSetUserTypeAndGoogleLogin}>
                                 <img src={googleLogo} alt="Google Login" className="w-10 h-10 object-contain" />
                                 <span className="ml-2">Login with Google</span>
                             </div>
@@ -48,7 +72,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                         />
                         <button
                             className="text-white bg-orange-700 hover:bg-orange-800 inline-flex items-center justify-center w-full px-6 py-3 shadow-xl rounded-xl mb-2"
-                            onClick={() => handleEmailLogin(email, password)}
+                            onClick={handleSetUserTypeAndEmailLogin}
                         >
                             Login with Email
                         </button>
