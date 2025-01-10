@@ -86,7 +86,7 @@ const EmployerPortal = () => {
                                 <li key={app.id} className="bg-gray-100 p-4 rounded-lg shadow-md">
                                     <p className="text-gray-700"><strong>Name:</strong> {app.applicantName}</p>
                                     <p className="text-gray-700"><strong>Email:</strong> {app.applicantEmail}</p>
-                                    <p className="text-gray-700"><strong>Cover Letter:</strong> <a href={app.coverLetterURL} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View</a></p>
+                                    <p className="text-gray-700"><strong>Cover Letter:</strong> {app.coverLetter}</p>
                                     {app.answers.map((answer, index) => (
                                         <p key={index} className="text-gray-700"><strong>Answer {index + 1}:</strong> {answer}</p>
                                     ))}
