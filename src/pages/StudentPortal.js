@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebaseconfig';
+import { db, storage } from '../firebaseconfig';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 import { useDocTitle } from '../components/CustomHook';
@@ -13,7 +14,7 @@ const StudentPortal = () => {
     const [selectedJob, setSelectedJob] = useState(null);
     const [applicantName, setApplicantName] = useState('');
     const [applicantEmail, setApplicantEmail] = useState('');
-    const [coverLetterURL, setCoverLetterURL] = useState('');
+    const [coverLetterFile, setCoverLetterFile] = useState(null);
     const [answers, setAnswers] = useState([]);
 
     useEffect(() => {
@@ -32,6 +33,12 @@ const StudentPortal = () => {
         setIsModalOpen(true);
     };
 
+    const handleFileChange = (e) => {
+        if (e.target.files[0]) {
+            setCoverLetterFile(e.target.files[0]);
+        }
+    };
+
     const handleAnswerChange = (index, value) => {
         const newAnswers = [...answers];
         newAnswers[index] = value;
@@ -41,6 +48,13 @@ const StudentPortal = () => {
     const handleSubmitApplication = async (e) => {
         e.preventDefault();
         try {
+            let coverLetterURL = '';
+            if (coverLetterFile) {
+                const storageRef = ref(storage, `coverLetters/${coverLetterFile.name}`);
+                await uploadBytes(storageRef, coverLetterFile);
+                coverLetterURL = await getDownloadURL(storageRef);
+            }
+
             await addDoc(collection(db, 'applications'), {
                 jobId: selectedJob.id,
                 applicantName: applicantName,
@@ -53,7 +67,7 @@ const StudentPortal = () => {
             setIsModalOpen(false);
             setApplicantName('');
             setApplicantEmail('');
-            setCoverLetterURL('');
+            setCoverLetterFile(null);
             setAnswers([]);
         } catch (error) {
             console.error('Error submitting application: ', error);
@@ -132,11 +146,11 @@ const StudentPortal = () => {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-gray-700">Cover Letter URL (to shared document)</label>
+                                <label className="block text-gray-700">Cover Letter (PDF)</label>
                                 <input
-                                    type="url"
-                                    value={coverLetterURL}
-                                    onChange={(e) => setCoverLetterURL(e.target.value)}
+                                    type="file"
+                                    accept=".pdf"
+                                    onChange={handleFileChange}
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     required
                                 />
